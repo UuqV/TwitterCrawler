@@ -13,9 +13,10 @@ api = twitter.Api(consumer_key='mqU6iYHbfYetiwdW3U0jjRyeh',
                   
 try:
     q = queue.Queue()
-    q.put(624241155)
+    q.put(556366535)
     
     while (not q.empty()):
+        
         new_id = q.get()
         
         status = api.GetFollowerIDs(user_id=new_id, screen_name=None, cursor=None, stringify_ids=False, count=None, total_count=None)
@@ -25,9 +26,17 @@ try:
             try:
                 api.CreateFriendship(user_id=each, screen_name=None, follow=True)
                 print 'Followed ' + str(each)
+                time.sleep(6)
             except twitter.error.TwitterError:
                 print "Follow didn't work."
-            time.sleep(60)
+        
+        to_unfollow = api.GetFriends()
+        to_unfollow.reverse()
+        for i in range(0, 4):
+            time.sleep(20)
+            api.DestroyFriendship(user_id=to_unfollow[i].AsDict()['id'], screen_name=None)
+            print 'Unfollowed ' + str(to_unfollow[i].AsDict()['id'])
+        
     
 except UnicodeDecodeError:
     print "Your message could not be encoded.  Perhaps it contains non-ASCII characters? "
